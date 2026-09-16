@@ -9,9 +9,16 @@ from policy_engine.rag.indexer import PolicyChunk
 class FAISSVectorStore:
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
         self.model_name = model_name
-        self.model = SentenceTransformer(model_name)
+        self._model = None  # Lazy-loaded on first use to reduce startup RAM
         self.index = None
         self.chunks: List[PolicyChunk] = []
+
+    @property
+    def model(self):
+        """Load SentenceTransformer only when first needed (lazy init)."""
+        if self._model is None:
+            self._model = SentenceTransformer(self.model_name)
+        return self._model
 
     def build_index(self, chunks: List[PolicyChunk]):
         self.chunks = chunks

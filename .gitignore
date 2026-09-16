@@ -15,6 +15,3 @@ ENV/
 .idea/
 .DS_Store
 Thumbs.db
-
-# Large Cache / Models
-*.index
