@@ -1,0 +1,201 @@
+[
+  {
+    "case_id": "CAND-001",
+    "policy_id": "USGIC-CSC-2017-2018",
+    "policy_start_date": "2024-01-01",
+    "claim_date": "2026-09-14",
+    "sum_insured_inr": 500000,
+    "continuous_coverage_months": 32,
+    "prior_insurer_continuous_years": 0,
+    "patient": {
+      "age": 58
+    },
+    "hospital": {
+      "name": "Apex Heart Institute",
+      "network_provider": true
+    },
+    "treatment": {
+      "type": "inpatient",
+      "admission_hours": 72,
+      "diagnosis": "Acute Myocardial Infarction",
+      "procedure": "Coronary Angioplasty",
+      "pre_existing": false,
+      "experimental": false
+    },
+    "expenses_inr": {
+      "room": 25000,
+      "doctor_fees": 40000,
+      "medicines_diagnostics": 110000,
+      "pre_hospitalization": 5000,
+      "post_hospitalization": 0,
+      "ambulance": 1000
+    },
+    "documents": [
+      "claim_form",
+      "itemized_bill"
+    ],
+    "evidence_context": {
+      "discharge_summary_present": false,
+      "treating_doctor_prescription_present": false
+    },
+    "task": "Assess whether the claim can be approved given that critical medical documents (discharge summary and doctor prescription) are missing."
+  },
+  {
+    "case_id": "CAND-002",
+    "policy_id": "USGIC-CSC-2017-2018",
+    "policy_start_date": "2024-01-01",
+    "claim_date": "2026-09-15",
+    "sum_insured_inr": 500000,
+    "continuous_coverage_months": 32,
+    "prior_insurer_continuous_years": 0,
+    "patient": {
+      "age": 63
+    },
+    "hospital": {
+      "name": "Home Care Services",
+      "network_provider": false
+    },
+    "treatment": {
+      "type": "domiciliary",
+      "admission_hours": 48,
+      "diagnosis": "Hypertension and Diabetes Management",
+      "procedure": "Home Monitoring & Saline Infusion",
+      "pre_existing": true,
+      "experimental": false
+    },
+    "expenses_inr": {
+      "room": 0,
+      "doctor_fees": 15000,
+      "medicines_diagnostics": 25000,
+      "pre_hospitalization": 0,
+      "post_hospitalization": 0,
+      "ambulance": 0
+    },
+    "documents": [
+      "claim_form",
+      "doctor_note"
+    ],
+    "evidence_context": {
+      "domiciliary_duration_days": 2,
+      "hospital_bed_unavailability_certificate": null
+    },
+    "task": "Determine if home treatment for hypertension/diabetes lasting 48 hours is eligible for domiciliary coverage under policy terms."
+  },
+  {
+    "case_id": "CAND-003",
+    "policy_id": "USGIC-CSC-2017-2018",
+    "policy_start_date": "2026-09-01",
+    "claim_date": "2026-09-16",
+    "sum_insured_inr": 300000,
+    "continuous_coverage_months": 0,
+    "prior_insurer_continuous_years": 0,
+    "patient": {
+      "age": 29
+    },
+    "hospital": {
+      "name": "St. Jude Hospital",
+      "network_provider": true
+    },
+    "treatment": {
+      "type": "inpatient",
+      "admission_hours": 48,
+      "diagnosis": "Acute Cholecystitis",
+      "procedure": "Laparoscopic Cholecystectomy",
+      "pre_existing": false,
+      "experimental": false
+    },
+    "expenses_inr": {
+      "room": 10000,
+      "doctor_fees": 25000,
+      "medicines_diagnostics": 35000,
+      "pre_hospitalization": 2000,
+      "post_hospitalization": 0,
+      "ambulance": 0
+    },
+    "documents": [
+      "claim_form",
+      "discharge_summary",
+      "itemized_bill",
+      "doctor_prescription"
+    ],
+    "task": "Evaluate whether an illness claim submitted 15 days after policy inception falls under the initial 30-day waiting period exclusion."
+  },
+  {
+    "case_id": "CAND-004",
+    "policy_id": "USGIC-CSC-2017-2018",
+    "policy_start_date": "2022-01-01",
+    "claim_date": "2026-02-10",
+    "sum_insured_inr": 500000,
+    "continuous_coverage_months": 49,
+    "prior_insurer_continuous_years": 0,
+    "patient": {
+      "age": 67
+    },
+    "hospital": {
+      "name": "Orthomed Super Specialty Hospital",
+      "network_provider": true
+    },
+    "treatment": {
+      "type": "inpatient",
+      "admission_hours": 120,
+      "diagnosis": "Severe Osteoarthritis Right Knee",
+      "procedure": "Total Knee Replacement",
+      "pre_existing": true,
+      "experimental": false
+    },
+    "expenses_inr": {
+      "room": 40000,
+      "doctor_fees": 150000,
+      "medicines_diagnostics": 220000,
+      "pre_hospitalization": 8000,
+      "post_hospitalization": 12000,
+      "ambulance": 1000
+    },
+    "documents": [
+      "claim_form",
+      "discharge_summary",
+      "itemized_bill",
+      "doctor_prescription",
+      "x_ray_report"
+    ],
+    "task": "Assess total knee replacement claim after 49 months of continuous coverage, applying room rent caps (1% SI/day) and doctor fee sub-limits (25% SI)."
+  },
+  {
+    "case_id": "CAND-005",
+    "policy_id": "USGIC-CSC-2017-2018",
+    "policy_start_date": "2024-01-01",
+    "claim_date": "2026-08-20",
+    "sum_insured_inr": 500000,
+    "continuous_coverage_months": 31,
+    "prior_insurer_continuous_years": 0,
+    "patient": {
+      "age": 45
+    },
+    "hospital": {
+      "name": "RegenMed Clinic",
+      "network_provider": false
+    },
+    "treatment": {
+      "type": "inpatient",
+      "admission_hours": 48,
+      "diagnosis": "Degenerative Disc Disease",
+      "procedure": "Autologous Stem Cell Therapy",
+      "pre_existing": false,
+      "experimental": true
+    },
+    "expenses_inr": {
+      "room": 20000,
+      "doctor_fees": 60000,
+      "medicines_diagnostics": 150000,
+      "pre_hospitalization": 0,
+      "post_hospitalization": 0,
+      "ambulance": 0
+    },
+    "documents": [
+      "claim_form",
+      "discharge_summary",
+      "itemized_bill"
+    ],
+    "task": "Determine admissibility of stem-cell therapy for spinal disc disease under experimental/unproven treatment exclusion."
+  }
+]

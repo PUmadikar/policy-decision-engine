@@ -1,0 +1,215 @@
+APTINO, INC.
+AI ENGINEER TAKE-HOME ASSIGNMENT
+Policy-Aware Multi-Agent RAG Claim Decision Engine
+
+
+1. What You Are Building
+You will build a small production-style AI system that analyzes health-insurance claim cases using Retrieval-Augmented Generation (RAG) and a genuine multi-agent workflow. The goal is reliable, evidence-backed decision making rather than conversational answering.
+The policy document is the authoritative source for policy decisions.
+All claimants, hospitals, dates, amounts, and claim facts in the supplied dataset are synthetic.
+A claim should be investigated across multiple decision dimensions, not answered with one retrieval query.
+If the available evidence is insufficient, the system must abstain instead of guessing.
+
+2. Materials We Provide
+Policy PDF: CSC – Individual Health Insurance, Universal Sompo General Insurance Co. Ltd., policy wording UNIHLIP18004V011718.
+Candidate dataset: 12 synthetic public claim cases in JSON.
+A README describing the supplied input package and how the data should be interpreted.
+Policy source: IRDAI-hosted public policy wording. The policy wording supplied with this assignment should be used as the primary knowledge base.
+Important: Do not use external medical or insurance knowledge to invent a policy conclusion. If the supplied policy does not provide enough evidence for a safe conclusion, return NEEDS_REVIEW / INSUFFICIENT_EVIDENCE.
+3. Input Data
+Each public case contains a case identifier, policy dates, sum insured, continuity information, patient attributes, hospital information, treatment information, expenses, available documents, and an investigation task. Some cases also contain additional evidence or billing context.
+Do not modify the supplied public cases. Use them as repeatable test inputs. Add your own cases in a separate file/folder for evaluation.
+4. Core Technical Requirements
+4.1 Policy ingestion and indexing
+Ingest the supplied policy PDF.
+Use meaningful/non-naive chunking. Avoid simply splitting the document into arbitrary fixed-size pieces.
+Preserve page number, section/heading, chunk identifier, and other useful metadata.
+The retrieved evidence must be traceable back to the source policy.
+4.2 Hybrid retrieval
+Implement both dense semantic retrieval and sparse lexical retrieval (for example, BM25).
+Combine the retrieval results using a sensible fusion strategy.
+Apply a reranking stage before the evidence is passed to the reasoning agents.
+Expose enough retrieval metadata to measure evidence/citation quality.
+4.3 Genuine multi-agent workflow
+Use at least three specialized agents. A recommended design is:
+You do not have to use exactly these five agents, but the responsibilities must be meaningfully separated. Simply sending the same prompt to several LLM calls does not count as a multi-agent architecture. Agents should exchange structured state rather than only free-form text.
+5. Decision and Evidence Contract
+Your API should return a structured response. You may extend the following example:
+{
+  "case_id": "PUB-001",
+  "decision": "ADMISSIBLE_WITH_LIMITS",
+  "confidence": 0.87,
+  "key_findings": [],
+  "applicable_limits": [],
+  "missing_evidence": [],
+  "citations": [
+    {
+      "claim": "Policy-supported statement",
+      "source": "policy.pdf",
+      "page": 7,
+      "section": "Scope of Cover",
+      "chunk_id": "..."
+    }
+  ],
+  "validation": {
+    "status": "PASS",
+    "unsupported_claims": []
+  },
+  "trace": []
+}
+Every material decision statement must be supported by one or more policy citations.
+Citations should identify at least the policy source, page, section/heading, and preferably a chunk ID.
+When evidence is missing or the policy does not support a safe conclusion, return NEEDS_REVIEW / INSUFFICIENT_EVIDENCE.
+Do not expose hidden chain-of-thought. Expose concise agent actions, evidence references, validation results, and timings instead.
+6. Decision Statuses
+7. Backend and API
+Expose at minimum:
+FastAPI is recommended, but the framework is your choice.
+The API must validate input and handle malformed/unsupported requests gracefully.
+Keep secrets in environment variables. Never commit API keys or credentials.
+Document request/response examples in the README.
+8. Frontend
+Provide a usable web interface. Streamlit is recommended, but another lightweight frontend is acceptable.
+Allow a reviewer to select/upload or paste a claim case.
+Show the final decision, confidence, key findings, applicable limits/deductions, and missing evidence.
+Show policy evidence/citations in a reviewer-friendly format.
+Show an execution trace containing agent names, major actions/tools, retrieval result counts, validation status, and elapsed time.
+Clearly show when the system abstains because evidence is insufficient.
+9. Evaluation — This Is Part of the Assignment
+The supplied package contains 12 public cases. Your implementation must be evaluated against all supplied public cases. In addition, create at least five new cases yourself. Do not replace the supplied cases.
+10. Reliability Scenarios You Must Handle
+The relevant policy clause is buried in a long document.
+A decision requires combining evidence from multiple policy sections.
+A waiting period changes the outcome even though the treatment itself may otherwise be covered.
+A category-specific sub-limit changes the payable amount.
+The case contains insufficient evidence.
+The input contains an attribute that is not relevant to the policy decision.
+The system cannot confidently establish a condition required by the policy.
+The LLM attempts to make a claim that cannot be supported by the policy.
+11. Deployment Requirements
+Provide a publicly accessible frontend URL that Aptino can test.
+Provide a publicly accessible backend/API URL, or a frontend that invokes the deployed backend.
+The repository must run locally using documented setup steps.
+Use environment variables for credentials and configuration.
+Include requirements.txt or pyproject.toml.
+Provide a health endpoint and graceful error handling.
+Free-tier infrastructure and free/low-cost model providers are acceptable and encouraged.
+12. Technology Guidance
+Python 3.10+ is required.
+Agent orchestration: LangGraph, a custom Python state machine, or another reasonable approach.
+Vector store: Qdrant, Chroma, FAISS, or equivalent.
+Sparse retrieval: BM25 or equivalent.
+Reranking: BGE reranker, Cohere, or another suitable model.
+LLM: free/low-cost provider or locally runnable model where practical.
+Frontend: Streamlit is recommended.
+Deployment: Render, Hugging Face Spaces, Streamlit Community Cloud, or another suitable low-cost/free platform.
+13. Required Deliverables
+Public GitHub repository.
+Live frontend URL.
+Live API URL or documented API endpoint.
+README with architecture diagram, setup instructions, design decisions, trade-offs, and known limitations.
+Evaluation script and evaluation results.
+Results for all supplied public cases.
+At least five additional candidate-created test cases and their results.
+Short architecture/design note (1–2 pages) explaining the agent boundaries, state flow, retrieval design, and important trade-offs.
+14. Acceptance Checklist
+☐ Policy is indexed with meaningful chunks and page/section metadata.
+☐ Dense retrieval + sparse retrieval + reranking are implemented.
+☐ At least three genuinely specialized agents are used.
+☐ Agents exchange structured state.
+☐ The final decision is structured and machine-readable.
+☐ Material decision claims have inspectable policy citations.
+☐ The system abstains when evidence is insufficient.
+☐ API and frontend are usable.
+☐ Agent/tool execution trace is visible without exposing hidden chain-of-thought.
+☐ All supplied public cases are evaluated.
+☐ At least five additional cases are evaluated.
+☐ At least two NEEDS_REVIEW cases are included.
+☐ At least three failure cases and improvements are documented.
+☐ System is deployed and locally reproducible.
+15. Evaluation Rubric
+16. What We Are Looking For
+We are not evaluating how many frameworks you can use. We are evaluating whether you can turn an ambiguous AI problem into a reliable engineering system. A smaller, well-tested system with strong evidence grounding is preferable to a large system with many unnecessary components.
+17. Candidate Notes
+You may use public documentation, open-source libraries, and AI coding assistants.
+You should be able to explain all significant architectural choices and important code paths during the review.
+Do not commit secrets or proprietary credentials.
+Do not expose hidden chain-of-thought in the application or submission. Provide concise, auditable traces instead.
+The assignment is intentionally designed so that policy evidence, retrieval quality, agent boundaries, validation, and abstention matter more than UI polish.
+Agent
+Responsibility
+Expected Output
+Case Analysis Agent
+Extract facts, identify decision dimensions, detect missing fields, and create the investigation plan.
+Structured case state + investigation checklist
+Policy Evidence Agent
+Retrieve relevant policy clauses using hybrid retrieval and reranking.
+Ranked evidence with page/section/chunk metadata
+Coverage & Exclusion Agent
+Assess coverage scope, waiting periods, exclusions, definitions, and applicable limits.
+Structured findings + evidence references
+Decision Agent
+Combine specialist findings into the final decision.
+Decision, findings, limits, missing evidence, next action
+Validation Agent
+Verify that material decision statements are actually supported by retrieved evidence.
+PASS/FAIL + unsupported claims + revision/review signal
+Status
+Meaning
+ADMISSIBLE
+Claim is supported by the supplied facts and policy, with no material limit/deduction identified.
+ADMISSIBLE_WITH_LIMITS
+Claim is admissible but one or more policy limits, caps, waiting-period effects, or deductions affect the payable amount.
+PARTIALLY_ADMISSIBLE
+Only part of the claim is supported; the response should clearly identify the excluded/non-payable portion.
+NOT_ADMISSIBLE
+The policy evidence supports a rejection/exclusion.
+NEEDS_REVIEW
+A safe final decision cannot be made because required evidence or policy support is missing/uncertain.
+Method
+Endpoint
+Purpose
+POST
+/analyze
+Analyze one claim case and return the structured decision.
+GET
+/health
+Health/readiness check.
+Measure
+Requirement
+Decision quality
+Report case-level success/accuracy and explain how the expected outcome is established.
+Retrieval quality
+Measure retrieval quality where practical, such as evidence recall@k or citation hit rate.
+Citation correctness
+Measure whether cited policy evidence actually supports the claim being made.
+Abstention
+Include at least two cases where the correct behavior is NEEDS_REVIEW / INSUFFICIENT_EVIDENCE.
+Failure analysis
+Document at least three failure cases, root causes, and what you changed to improve the system.
+Reproducibility
+Provide a script/command that runs the evaluation end-to-end and produces the reported metrics.
+Area
+Weight
+Strong Submission
+Red Flag
+RAG & Evidence Retrieval
+25%
+Hybrid retrieval, meaningful chunking, reranking, strong metadata-aware citations.
+Vector search only, weak retrieval, or unsupported citations.
+Multi-Agent Workflow
+25%
+Distinct responsibilities, structured state, useful validation/retry behavior.
+Multiple prompts presented as agents without meaningful separation.
+Decision Quality & Reliability
+20%
+Correct decisions, appropriate abstention, limits/deductions, evidence-grounded reasoning.
+Confident unsupported decisions or poor abstention.
+Engineering Quality
+15%
+Typed/modular code, tests, error handling, configuration, clean API.
+Hardcoded keys, monolithic code, fragile dependencies.
+Deployment & Evaluation
+15%
+Working public system, reproducible evaluation, trace visibility.
+Local-only system or no meaningful evaluation.
