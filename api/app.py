@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import datetime
@@ -28,33 +29,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global pipeline instance initialized on startup
+# Global pipeline instance - lazily initialized on first request to reduce startup RAM usage
 pipeline: ClaimDecisionPipeline = None
 
-@app.on_event("startup")
-def startup_event():
+def get_pipeline() -> ClaimDecisionPipeline:
     global pipeline
-    pipeline = ClaimDecisionPipeline()
+    if pipeline is None:
+        pipeline = ClaimDecisionPipeline()
+    return pipeline
 
 @app.get("/health", tags=["Health"])
 def health_check():
+    p = get_pipeline()
     return {
         "status": "HEALTHY",
         "service": "Claim Decision Engine",
         "llm_provider": settings.LLM_PROVIDER,
-        "policy_chunks": len(pipeline.retriever.chunks) if pipeline else 0,
+        "policy_chunks": len(p.retriever.chunks) if p else 0,
         "timestamp": datetime.datetime.now().isoformat()
     }
 
 @app.post("/analyze", response_model=ClaimDecisionResponse, tags=["Analysis"])
 def analyze_claim_endpoint(claim_input: ClaimCaseInput):
-    if not pipeline:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Claim decision pipeline is not initialized."
-        )
     try:
-        response = pipeline.analyze_claim(claim_input)
+        p = get_pipeline()
+        response = p.analyze_claim(claim_input)
         return response
     except Exception as e:
         raise HTTPException(
@@ -64,4 +63,5 @@ def analyze_claim_endpoint(claim_input: ClaimCaseInput):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
