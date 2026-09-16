@@ -102,19 +102,33 @@ d:/Aptino/
 
 ---
 
+## 🌐 Live Deployment URLs
+
+| Deliverable | URL | Status |
+|---|---|---|
+| **Public GitHub Repository** | [PUmadikar/policy-decision-engine](https://github.com/PUmadikar/policy-decision-engine) | 📦 Active |
+| **Live Streamlit Frontend** | [policy-decision-engine-ktvejzf6bckv9xtpvym3hp.streamlit.app](https://policy-decision-engine-ktvejzf6bckv9xtpvym3hp.streamlit.app/) | 🚀 Live |
+| **Live FastAPI Backend** | [policy-decision-engine.onrender.com](https://policy-decision-engine.onrender.com) | ⚡ Live |
+| **Swagger API Docs** | [/docs](https://policy-decision-engine.onrender.com/docs) · [/redoc](https://policy-decision-engine.onrender.com/redoc) | 📖 Live |
+| **API Health Check** | [/health](https://policy-decision-engine.onrender.com/health) | ✅ Live |
+
+---
+
 ## 🚀 Quickstart & Setup
 
-### 1. Installation
-Clone repository and install dependencies:
+### 1. Clone & Install Dependencies
 ```bash
+git clone https://github.com/PUmadikar/policy-decision-engine.git
+cd policy-decision-engine
 python -m pip install -r requirements.txt
 ```
 
-### 2. Run Evaluation Suite
+### 2. Run Evaluation Suite (17 Test Cases)
 Execute the end-to-end evaluation script on all 17 test cases:
 ```bash
 python -m eval.evaluate
 ```
+*Outputs evaluation metrics to `eval/evaluation_results.json` and `eval/evaluation_report.md`.*
 
 ### 3. Launch FastAPI Backend
 ```bash
@@ -284,9 +298,9 @@ Evaluated on **17 total test cases** (12 public cases + 5 candidate cases):
 
 | Deliverable | Status | Location / Reference |
 |---|---|---|
-| **1. Public GitHub Repository** | 📦 Ready for push | Local Git repository initialized (`d:/Aptino`) |
-| **2. Live Frontend URL** | 🚀 Ready for Streamlit Cloud | Run locally via `streamlit run ui/app.py` or deploy via Streamlit Cloud |
-| **3. Live API Endpoint** | ⚡ FastAPI Server | `/analyze` & `/health` live at `http://localhost:8000` (`python api/app.py`) |
+| **1. Public GitHub Repository** | ✅ Live | [github.com/PUmadikar/policy-decision-engine](https://github.com/PUmadikar/policy-decision-engine) |
+| **2. Live Frontend URL** | ✅ Deployed | [Streamlit Cloud](https://policy-decision-engine-ktvejzf6bckv9xtpvym3hp.streamlit.app/) |
+| **3. Live API Endpoint** | ✅ Deployed | [policy-decision-engine.onrender.com/analyze](https://policy-decision-engine.onrender.com/analyze) · [/health](https://policy-decision-engine.onrender.com/health) |
 | **4. README & Architecture** | ✅ Complete | Complete with Mermaid diagram, setup steps, design decisions & trade-offs |
 | **5. Evaluation Script & Results** | ✅ Complete | `python -m eval.evaluate` -> `eval/evaluation_results.json` & `evaluation_report.md` |
 | **6. Public Cases Results** | ✅ Complete | 12/12 Public Cases evaluated (100% Accuracy) in `eval/evaluation_results.json` |
