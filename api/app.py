@@ -1,5 +1,13 @@
+import sys
 import time
 import datetime
+from pathlib import Path
+
+# Add project root directory to sys.path for cloud deployment and subfolder execution
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from policy_engine.schemas import ClaimCaseInput, ClaimDecisionResponse
