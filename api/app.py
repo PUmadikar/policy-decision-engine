@@ -11,9 +11,6 @@ if str(ROOT_DIR) not in sys.path:
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from policy_engine.schemas import ClaimCaseInput, ClaimDecisionResponse
-from policy_engine.graph import ClaimDecisionPipeline
-from policy_engine.config import settings
 
 app = FastAPI(
     title="Policy-Aware RAG Claim Decision Engine API",
@@ -29,31 +26,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global pipeline instance - lazily initialized on first request to reduce startup RAM usage
-pipeline: ClaimDecisionPipeline = None
+# Global pipeline — lazily initialized on first request.
+# ALL heavy ML imports (sentence_transformers/PyTorch, FAISS, LangGraph) are
+# deferred inside get_pipeline() so uvicorn can bind the port before any
+# heavy computation. This is essential for Render's 512MB free tier.
+_pipeline = None
 
-def get_pipeline() -> ClaimDecisionPipeline:
-    global pipeline
-    if pipeline is None:
-        pipeline = ClaimDecisionPipeline()
-    return pipeline
+def get_pipeline():
+    global _pipeline
+    if _pipeline is None:
+        from policy_engine.graph import ClaimDecisionPipeline  # deferred heavy import
+        _pipeline = ClaimDecisionPipeline()
+    return _pipeline
+
+
+@app.get("/", tags=["Root"])
+def root():
+    return {"message": "API is live. Visit /docs for Swagger UI."}
+
 
 @app.get("/health", tags=["Health"])
 def health_check():
-    p = get_pipeline()
+    """Lightweight — does NOT trigger pipeline init. Returns immediately."""
     return {
         "status": "HEALTHY",
         "service": "Claim Decision Engine",
-        "llm_provider": settings.LLM_PROVIDER,
-        "policy_chunks": len(p.retriever.chunks) if p else 0,
         "timestamp": datetime.datetime.now().isoformat()
     }
 
-@app.post("/analyze", response_model=ClaimDecisionResponse, tags=["Analysis"])
-def analyze_claim_endpoint(claim_input: ClaimCaseInput):
+
+@app.post("/analyze", tags=["Analysis"])
+def analyze_claim_endpoint(claim_input: dict):
+    """Analyze a claim. First call triggers cold-start pipeline init (~30-60s)."""
     try:
+        from policy_engine.schemas import ClaimCaseInput
         p = get_pipeline()
-        response = p.analyze_claim(claim_input)
+        response = p.analyze_claim(ClaimCaseInput(**claim_input))
         return response
     except Exception as e:
         raise HTTPException(
